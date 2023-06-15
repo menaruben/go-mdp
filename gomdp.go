@@ -7,7 +7,9 @@ import (
 	"os"
 	"strings"
 
+	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/eiannone/keyboard"
+	"github.com/fatih/color"
 )
 
 type Slide struct {
@@ -69,9 +71,9 @@ func (p *Presentation) readMd(path string) {
 					p.Slides = append(p.Slides, slide)
 				}
 			}
-			if numPage > 0 && !(strings.HasPrefix(line, "# ")) {
-				p.Slides[numPage-1].Lines = append(p.Slides[numPage-1].Lines, line)
-			}
+		}
+		if numPage > 0 && !(strings.HasPrefix(line, "# ")) {
+			p.Slides[numPage-1].Lines = append(p.Slides[numPage-1].Lines, line)
 		}
 	}
 }
@@ -82,9 +84,11 @@ func clearScreen() {
 
 func displaySlide(s Slide) {
 	slideContent := strings.Join(s.Lines, "\n")
-	slideDisplayText := fmt.Sprintf("%s\n\n%s", s.Title, slideContent)
+	// slideDisplayText := fmt.Sprintf("%s\n\t\n%s", s.Title, slideContent)
+	slideDisplayText := markdown.Render(slideContent, 80, 6)
 
-	fmt.Println(slideDisplayText)
+	fmt.Println(s.Title)
+	fmt.Println(string(slideDisplayText))
 }
 
 func (p *Presentation) displayPresentation() {
@@ -92,7 +96,8 @@ func (p *Presentation) displayPresentation() {
 	// fmt.Println("Press the left or right arrow key. Press 'q' to quit. ")
 
 	presentationStart := fmt.Sprintf("%s\n%s\n%s", p.Title, p.Author, p.Date)
-	fmt.Println(presentationStart)
+	// fmt.Println(presentationStart)
+	color.Cyan(presentationStart)
 
 	err := keyboard.Open()
 	if err != nil {
@@ -100,6 +105,7 @@ func (p *Presentation) displayPresentation() {
 	}
 	defer keyboard.Close()
 
+	var firstKeyPressed bool = false
 	var numPage int = 0
 	for {
 		char, key, err := keyboard.GetKey()
@@ -111,21 +117,24 @@ func (p *Presentation) displayPresentation() {
 			clearScreen()
 			numPage--
 			if numPage < 0 {
-				break
+				color.Cyan(presentationStart)
+			} else {
+				displaySlide(p.Slides[numPage])
 			}
-
-			displaySlide(p.Slides[numPage])
-			// fmt.Println("left")
 
 		} else if key == keyboard.KeyArrowRight {
 			clearScreen()
-			numPage++
-			if numPage > len(p.Slides) {
-				break
-			}
+			if !firstKeyPressed {
+				displaySlide(p.Slides[0])
+				firstKeyPressed = true
+			} else {
+				numPage++
+				if numPage >= len(p.Slides) {
+					break
+				}
 
-			displaySlide(p.Slides[numPage])
-			// fmt.Println("right")
+				displaySlide(p.Slides[numPage])
+			}
 
 		} else if char == 'q' || char == 'Q' {
 			fmt.Println("Quitting...")

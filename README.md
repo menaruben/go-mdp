@@ -6,4 +6,15 @@ convert markdown files to presentations inside your terminal! (unfinished)
 go run gomdp.go --path sample.md
 ```
 
-Now you can use the left and right arrow keys to move to the next or previous slide. 
+Now you can use the left and right arrow keys to move to the next or previous slide. Our `sample.md` presentation
+should looke like this:
+
+> **_INFO:_** You can navigate through the presentation using your left and right arrow keys. Press 'q' to quit. 
+
+[titleslide](./imgs/TitleSlide.png)
+
+[slide1](./imgs/Slide1.png)
+
+[slide2](./imgs/Slide2.png)
+
+[slide3](./imgs/Slide3.png)
