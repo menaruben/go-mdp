@@ -11,12 +11,12 @@ should looke like this:
 
 > **_INFO:_** You can navigate through the presentation using your left and right arrow keys. Press 'q' to quit. Images get converted into colored ASCII art
 
-![titleslide](./imgs/TitleSlide.png)
+![titleslide](./imgs/slide_1.png)
 
-![slide1](./imgs/Slide1.png)
+![slide1](./imgs/slide_2.png)
 
-![slide2](./imgs/Slide2.png)
+![slide2](./imgs/slide_3.png)
 
-![slide3](./imgs/Slide3.png)
+![slide3](./imgs/slide_4.png)
 
-![slide4](./imgs/Slide4.png)
+![slide4](./imgs/slide_5.png)
