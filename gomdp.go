@@ -26,6 +26,8 @@ type Presentation struct {
 	Date   string
 	Slides []Slide
 	Pages  int
+	Width  int
+	Height int
 }
 
 func (p *Presentation) setInfo(info []string) {
@@ -87,6 +89,24 @@ func (p *Presentation) readMd(path string) {
 	}
 }
 
+const PIXELPERCHAR = 17
+
+func (p *Presentation) CenterStr(text string) string {
+	textWidth := len(text) * PIXELPERCHAR
+	offsetPixel := (p.Width - textWidth) / 2
+	offsetChars := offsetPixel / PIXELPERCHAR
+
+	var centeredStringArr []string
+
+	for i := 0; i < offsetChars; i++ {
+		centeredStringArr = append(centeredStringArr, " ")
+	}
+	centeredStringArr = append(centeredStringArr, text)
+	centeredString := strings.Join(centeredStringArr, "")
+
+	return centeredString
+}
+
 func clearScreen() {
 	fmt.Printf("\x1bc")
 }
@@ -114,13 +134,21 @@ func displaySlide(s Slide) {
 	}
 }
 
+func (p Presentation) displayStart() {
+	titleCenter := p.CenterStr(p.Title)
+	authorCenter := p.CenterStr(p.Author)
+	dateCenter := p.CenterStr(p.Date)
+
+	color.Cyan(titleCenter)
+	color.Cyan(authorCenter)
+	color.Cyan(dateCenter)
+}
+
 func (p *Presentation) displayPresentation() {
 	clearScreen()
 	// fmt.Println("Press the left or right arrow key. Press 'q' to quit. ")
 
-	presentationStart := fmt.Sprintf("%s\n%s\n%s", p.Title, p.Author, p.Date)
-	// fmt.Println(presentationStart)
-	color.Cyan(presentationStart)
+	p.displayStart()
 
 	err := keyboard.Open()
 	if err != nil {
@@ -140,7 +168,7 @@ func (p *Presentation) displayPresentation() {
 			clearScreen()
 			numPage--
 			if numPage < 0 {
-				color.Cyan(presentationStart)
+				p.displayStart()
 			} else {
 				displaySlide(p.Slides[numPage])
 			}
@@ -168,9 +196,14 @@ func (p *Presentation) displayPresentation() {
 
 func main() {
 	filePath := flag.String("path", "", "specifies the path of the markdown file")
+	height := flag.Int("height", 1080, "specifies the height of the window in pixel")
+	width := flag.Int("width", 1920, "specifies the width of the window in pixel")
 	flag.Parse()
 
-	presentation := Presentation{}
+	presentation := Presentation{
+		Height: *height,
+		Width:  *width,
+	}
 	presentation.readMd(*filePath)
 
 	presentation.displayPresentation()
