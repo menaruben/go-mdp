@@ -1,6 +1,6 @@
-!author: Rubén Mena
-!title: Hello Worlds
-!date: 14.06.2023
+?author: Rubén Mena
+?title: Hello Worlds
+?date: 14.06.2023
 
 # Python
 ```python
@@ -19,6 +19,11 @@ func main() {
     fmt.Println("Hello World")
 }
 ```
+
+# Go Logo
+This is the go logo:
+
+![](./imgs/gologo.png)
 
 # the end
 This is the end!

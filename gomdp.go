@@ -10,11 +10,13 @@ import (
 	markdown "github.com/MichaelMure/go-term-markdown"
 	"github.com/eiannone/keyboard"
 	"github.com/fatih/color"
+	"github.com/qeesung/image2ascii/convert"
 )
 
 type Slide struct {
 	Title string
 	Lines []string
+	Image string
 	Page  int
 }
 
@@ -28,13 +30,13 @@ type Presentation struct {
 
 func (p *Presentation) setInfo(info []string) {
 	switch info[0] {
-	case "!author":
+	case "?author":
 		p.Author = info[1]
 
-	case "!title":
+	case "?title":
 		p.Title = info[1]
 
-	case "!date":
+	case "?date":
 		p.Date = info[1]
 	}
 }
@@ -56,10 +58,12 @@ func (p *Presentation) readMd(path string) {
 
 		if line != "" {
 			switch ch := line[0]; ch {
-			case '!':
+			// information about markdown file
+			case '?':
 				info := strings.SplitN(line, ": ", 2)
 				p.setInfo(info)
 
+			// titles (for slide titles)
 			case '#':
 				titleLine := strings.Split(line, "# ")
 				if len(titleLine) > 1 {
@@ -70,9 +74,14 @@ func (p *Presentation) readMd(path string) {
 					}
 					p.Slides = append(p.Slides, slide)
 				}
+
+			// images
+			case '!':
+				imageUrl := strings.Trim(strings.Split(line, "![](")[1], ")")
+				p.Slides[numPage-1].Image = imageUrl
 			}
 		}
-		if numPage > 0 && !(strings.HasPrefix(line, "# ")) {
+		if numPage > 0 && !(strings.HasPrefix(line, "# ")) && !(strings.HasPrefix(line, "![](")) {
 			p.Slides[numPage-1].Lines = append(p.Slides[numPage-1].Lines, line)
 		}
 	}
@@ -82,13 +91,27 @@ func clearScreen() {
 	fmt.Printf("\x1bc")
 }
 
+func (s Slide) printAsciiImage() {
+	convertOptions := convert.DefaultOptions
+	convertOptions.FixedWidth = 80
+	convertOptions.FixedHeight = 20
+
+	converter := convert.NewImageConverter()
+	fmt.Print(converter.ImageFile2ASCIIString(s.Image, &convertOptions))
+}
+
 func displaySlide(s Slide) {
 	slideContent := strings.Join(s.Lines, "\n")
 	// slideDisplayText := fmt.Sprintf("%s\n\t\n%s", s.Title, slideContent)
 	slideDisplayText := markdown.Render(slideContent, 80, 6)
 
-	fmt.Println(s.Title)
+	// fmt.Println(s.Title)
+	color.New(color.FgCyan, color.Bold).Printf("%s\n", s.Title)
 	fmt.Println(string(slideDisplayText))
+
+	if s.Image != "" {
+		s.printAsciiImage()
+	}
 }
 
 func (p *Presentation) displayPresentation() {
@@ -140,7 +163,6 @@ func (p *Presentation) displayPresentation() {
 			fmt.Println("Quitting...")
 			os.Exit(0)
 		}
-
 	}
 }
 
