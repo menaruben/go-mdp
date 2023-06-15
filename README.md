@@ -11,10 +11,10 @@ should looke like this:
 
 > **_INFO:_** You can navigate through the presentation using your left and right arrow keys. Press 'q' to quit. 
 
-[titleslide](./imgs/TitleSlide.png)
+![titleslide](./imgs/TitleSlide.png)
 
-[slide1](./imgs/Slide1.png)
+![slide1](./imgs/Slide1.png)
 
-[slide2](./imgs/Slide2.png)
+![slide2](./imgs/Slide2.png)
 
-[slide3](./imgs/Slide3.png)
+![slide3](./imgs/Slide3.png)
